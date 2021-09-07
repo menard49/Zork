@@ -8,20 +8,42 @@ namespace Zork
         {
             Console.WriteLine("Welcome to Zork!");
 
-            string inputString = Console.ReadLine();
-            inputString = inputString.ToUpper();
-            if (inputString == "QUIT")
+            Commands command = Commands.UNKNOWN;
+            while (command != Commands.QUIT)
             {
-                Console.WriteLine("Thank you for playing.");
+                Console.Write("> ");
+                command = ToCommand(Console.ReadLine().Trim());
+
+                string outputString;
+                switch (command)
+                {
+                    case Commands.QUIT:
+                        outputString = "Thank you for playing!";
+                        break;
+
+                    case Commands.LOOK:
+                        outputString = "This is an open field west of a white house, with a boarded front door. \n A rubber mat saying 'Welcome to Zork!' lies by the door.";
+                        break;
+
+                    case Commands.NORTH:
+                    case Commands.SOUTH:
+                    case Commands.EAST:
+                    case Commands.WEST:
+                        outputString = $"You moved {command}.";
+                        break;
+
+                    default:
+                        outputString = "Unrecognized command";
+                        break;
+                }
+
+                Console.WriteLine(outputString);
             }
-            else if (inputString == "LOOK")
-            {
-                Console.WriteLine("This is an open field west of a white house, with a boarded front door. \na rubber mat saying 'Welcome to Zork!' lies by the door.");
-            }
-            else
-            {
-                Console.WriteLine("Unrecognized command.");
-            }
+        }
+
+        private static Commands ToCommand(string commandString)
+        {
+            return Enum.TryParse<Commands>(commandString, out Commands command) ? command : Commands.UNKNOWN;
         }
     }
 }
