@@ -1,6 +1,4 @@
 .vs/
-Zork/bin
-Zork/obj
-Zork/Zork 1.2 - Finding Your Direction .txt
-Zork/Commands.cs
-*.txt
+Zork/bin/
+Zork/obj/
+
