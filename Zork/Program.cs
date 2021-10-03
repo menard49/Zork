@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+//using System.Diagnostics;
+//using System.Linq;
+using System.IO;
+//using Newtonsoft.Json;
 
 namespace Zork
 {
@@ -19,7 +21,11 @@ namespace Zork
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Zork");
-            InitializeRoomDescriptions();
+
+            const string roomDescriptionsFilename = "Rooms.txt";
+           // string roomsFilename = (args.Length > 0 ? args[(int)CommandLineArguments.RoomsFilename] : defaultRoomsFilename);
+
+            InitializeRoomDescriptions(roomDescriptionsFilename);
 
             Room previousRoom = null;
 
@@ -35,7 +41,7 @@ namespace Zork
                 }
 
                 Console.Write(">");
-                command = ToCommand(Console.ReadLine().Trim().ToUpper());
+                command = ToCommand(Console.ReadLine().Trim());
 
                 switch (command)
                 {
@@ -93,27 +99,43 @@ namespace Zork
             return isValidMove;
         }
         private static Commands ToCommand(string commandString) => Enum.TryParse(commandString, true, out Commands result) ? result : Commands.UNKNOWN; //commandString, ignoreCase: true, add ignoreCase
-        private static void InitializeRoomDescriptions()
+        private static void InitializeRoomDescriptions(string roomsFilename)
         {
-            var roomMap = new Dictionary<string, Room>();
-            foreach (Room room in Rooms)
+             var roomMap = new Dictionary<string, Room>();
+             foreach (Room room in Rooms)
+             {
+                 roomMap.Add(room.Name, room);
+                 roomMap[room.Name] = room;
+             }
+
+           // string roomsJsonString = File.ReadAllText(roomDescriptionsFilename);
+           // Room[] rooms = JsonConvert.DeserializeObject<Room[]>(roomsJsonString);
+           // foreach (Room room in rooms)
+           // {
+           //     roomMap[room.Name].Description = room.Description;
+           // }
+                  
+
+
+
+                const string fieldDelimiter = "##";
+                const int expectedFieldCount = 2;
+          
+            string[] lines = File.ReadAllLines(roomsFilename);
+            foreach (string line in lines)
             {
-                roomMap[room.Name] = room;
+          
+                string[] fields = line.Split(fieldDelimiter);               
+                if (fields.Length != expectedFieldCount)
+                {
+                    throw new InvalidDataException("Invalid record.");
+                }
+          
+                string name = fields[(int)Fields.Name];
+                string description = fields[(int)Fields.Description];
+          
+                roomMap[name].Description = description;
             }
-
-
-            roomMap["Dense Woods"].Description = "This is a dimly lit forest, with large tress all around. To the east, there appears to be sunlight.";
-            roomMap["North of House"].Description = "You are facing the north side of a white house. There is no door here, and all the windows are barred.";
-            roomMap["Clearing"].Description = "You are in a clearing, with a forest surrounding you on the west and south.";
-
-            roomMap["Forest"].Description = "This is a Forest, with trees in all directions around you.";
-            roomMap["West of House"].Description = "This is an open field west of a white house, with a boarded front door.";
-            roomMap["Behind House"].Description = "You are behind the white house. In one corner of the house there is a small window which is slightly ajar.";
-
-            roomMap["Rocky Trail"].Description = "You are on a rock-strewn trail.";
-            roomMap["South of House"].Description = "You are facing the south side of a white house. There is no door here, and all the windows are barred.";
-            roomMap["Canyon View"].Description = "You are at the top of the Great Canyon on its south wall.";
-
 
         }
 
@@ -132,6 +154,18 @@ namespace Zork
             Commands.EAST,
             Commands.WEST
         };
+
+        private enum Fields
+        {
+            Name = 0,
+            Description
+        }
+
+        private enum CommandLineArguments
+        {
+            RoomsFilename = 0 
+        }
+
         private static (int Row, int Column) Location = (1, 1);
     }
 }
