@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Zork
+﻿namespace Zork
 {
-    enum Commands
+    public enum Commands
     {
         QUIT,
         LOOK,
