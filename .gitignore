@@ -1,4 +1,5 @@
 .vs/
 Zork/bin/
-Zork/obj/
-
+Zork/obj
+Zork.Common/bin
+Zork.Common/obj
